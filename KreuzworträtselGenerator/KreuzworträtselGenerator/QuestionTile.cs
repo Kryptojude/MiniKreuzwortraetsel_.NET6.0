@@ -1,6 +1,6 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    class QuestionTile : QuestionOrBaseWordTile
+    class QuestionTile : QuestionOrBaseWordTile, Form1.IPaintable
     {
         static public readonly List<QuestionTile> QuestionTileList = new List<QuestionTile>();
 

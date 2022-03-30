@@ -33,8 +33,8 @@
         }
 
         Point Position;
-        Rectangle Bounds_global;
-        Rectangle Bounds_local;
+        public Rectangle Bounds_global { get; set; }
+        public Rectangle Bounds_local { get; set; }
         // All fields private with accessor methods?
         protected Font font = new Font("Verdana", 9.75f, FontStyle.Bold);
         protected Brush foregroundColor = Brushes.Blue;
@@ -106,7 +106,6 @@
         }
         public void EndPaint(Graphics g)
         {
-            // Draw outline Rectangle
             g.ResetTransform();
             g.ResetClip();
         }

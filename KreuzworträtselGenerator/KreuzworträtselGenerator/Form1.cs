@@ -18,6 +18,29 @@ namespace KreuzworträtselGenerator
         BufferedGraphicsContext currentContext;
         BufferedGraphics myBuffer;
 
+        public interface IPaintable
+        {
+            Rectangle Bounds_global { get; set; }
+            Rectangle Bounds_local { get; set; }
+
+            void BeginPaint(Graphics g)
+            {
+                // Block painting out of bounds
+                g.SetClip(Bounds_global);
+                // Set coordinate system origin to this location
+                g.TranslateTransform(Bounds_global.Location.X, Bounds_global.Location.Y);
+                // Clear
+                g.FillRectangle(Brushes.White, Bounds_local);
+
+            }
+            void Paint(Graphics g);
+            void EndPaint(Graphics g)
+            {
+                g.ResetTransform();
+                g.ResetClip();
+            }
+        }
+
         // TODO: 
         /*
          * Lokale Kopie der Datenbank machen und diese benutzen falls Verbindung fehlschlägt

@@ -1,6 +1,6 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    class LetterTile : Tile
+    class LetterTile : Tile, Form1.IPaintable
     {
         /// <summary>
         /// The question tile(s) that this letter belongs to
