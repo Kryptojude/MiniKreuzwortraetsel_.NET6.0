@@ -1,7 +1,10 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    abstract class Tile
+    abstract class Tile : Form1.IPaintable
     {
+        //
+        //  <--- static --->
+        //
         // Shorten tuple lines with var?
         static public (string Question, string Answer) TupleToBeFilled;
         static protected List<Tile> tiles_with_extended_hover_list = new List<Tile>();
@@ -32,6 +35,9 @@
             return Arrows.ElementAt(direction).Value;
         }
 
+        //
+        //  <--- instance --->
+        //
         Point Position;
         public Rectangle Bounds_global { get; set; }
         public Rectangle Bounds_local { get; set; }
@@ -44,7 +50,8 @@
         /// </summary>
         ExtendedHover extendedHover = ExtendedHover.Off;
         protected Pen extendedHoverPen = new Pen(Brushes.Red, 6);
-        bool RepaintFlag;
+        public bool RepaintFlag { get; set; }
+        public Form1.IPaintable[] Children { get; private set; }
 
         public Tile(Point position)
         {
@@ -61,23 +68,7 @@
         public void SetExtendedHover(ExtendedHover _extendedHover)
         {
             extendedHover = _extendedHover;
-            SetRepaintFlag(true);
-        }
-        public bool GetRepaintFlag()
-        {
-            return RepaintFlag;
-        }
-        public void SetRepaintFlag(bool repaintFlag)
-        {
-           RepaintFlag = repaintFlag;
-        }
-        public Rectangle GetGlobalBounds()
-        {
-            return Bounds_global;
-        }
-        public Rectangle GetLocalBounds()
-        {
-            return Bounds_local;
+            RepaintFlag = true;
         }
         /// <summary>
         /// Refers to the position in grid[,] array
@@ -96,19 +87,7 @@
         /// the called method belongs to the tile instance that the mouse was on before the movement
         /// </summary>
         public abstract void MouseLeave(MouseEventArgs e, PictureBox pb);
-        public abstract void Paint(Graphics g);
-        protected void BeginPaint(Graphics g)
-        {
-            g.SetClip(Bounds_global);
-            TranslateTransformGraphics(g, Bounds_global.Location);
-            // Clear
-            g.FillRectangle(Brushes.White, Bounds_local);
-        }
-        public void EndPaint(Graphics g)
-        {
-            g.ResetTransform();
-            g.ResetClip();
-        }
+        public abstract void PaintOperations(Graphics g);
         /// <summary>
         /// Moves the origin of the grid
         /// </summary>

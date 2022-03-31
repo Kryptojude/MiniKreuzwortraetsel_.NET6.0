@@ -1,6 +1,6 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    class SubTile
+    class SubTile : Form1.IPaintable
     {
         static public readonly Font HOVER_ARROW_FONT = new Font(FontFamily.GenericSerif, 12, FontStyle.Bold);
         static readonly Point[][] subTilePolygons = new Point[][] {
@@ -18,6 +18,9 @@
         bool highlight_flag;
         public int Direction { get; }
         public EmptyTile ParentTile { get; }
+        public Rectangle Bounds_global { get; set; }
+        public Rectangle Bounds_local { get; set; }
+        public bool RepaintFlag { get; set; }
 
         public SubTile(int direction, EmptyTile parentTile)
         {
@@ -28,7 +31,7 @@
         {
             highlight_color = null;
             highlight_flag = false;
-            ParentTile.SetRepaintFlag(true);
+            ParentTile.RepaintFlag = true;
         }
         public void SetHighlight(float colorLevel)
         {
@@ -52,7 +55,7 @@
             return highlight_color;
         }
 
-        public void Paint (Graphics g)
+        public void PaintOperations (Graphics g)
         {
             // Hover flag set to true?
             if (hover_flag)

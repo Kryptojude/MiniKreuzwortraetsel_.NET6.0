@@ -12,7 +12,7 @@
         {
             Direction = direction;
             LinkedLetterTiles = new List<LetterTile>();
-            deleteButton = new DeleteButton(GetGlobalBounds().Location);
+            deleteButton = new DeleteButton(Bounds_global.Location);
 
             foregroundColor = Brushes.Red;
             font = new Font(FontFamily.GenericSerif, 12, FontStyle.Bold);
@@ -67,23 +67,18 @@
             deleteButton.SetVisible(false);
             deleteButton.SetHover(false, pb);
 
-            SetRepaintFlag(true);
+            RepaintFlag = true;
         }
 
-        public override void Paint(Graphics g)
+        public override void PaintOperations(Graphics g)
         {
-            BeginPaint(g);
-
-            Rectangle LocalBounds = GetLocalBounds();
-            // Draw text
+            // Draw text // calculate in Text setter method?
             Size textSize = TextRenderer.MeasureText(Text, font);
             g.DrawString(Text, font, foregroundColor, Form1.TS / 2 - textSize.Width / 2, Form1.TS / 2 - textSize.Height / 2);
-            g.DrawRectangle(Pens.Black, 0, 0, LocalBounds.Width - 1, LocalBounds.Height - 1);
-
-            EndPaint(g);
+            g.DrawRectangle(Pens.Black, 0, 0, Bounds_local.Width - 1, Bounds_local.Height - 1);
 
             // Draw X
-            deleteButton.Paint(g);
+            deleteButton.RepaintFlag = true;
         }
 
         public override void MouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid)
@@ -99,7 +94,7 @@
                 // so undo deleteButton hover
                 deleteButton.SetHover(false, pb);
 
-            SetRepaintFlag(true);
+            RepaintFlag = true;
         }
     }
 }

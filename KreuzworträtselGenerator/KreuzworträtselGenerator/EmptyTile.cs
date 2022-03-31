@@ -44,23 +44,18 @@
             grid[GetPosition().Y, GetPosition().X] = new BaseWordTile(GetPosition(), direction);
             return grid[GetPosition().Y, GetPosition().X] as BaseWordTile;
         }
-        public override void Paint(Graphics g)
+        public override void PaintOperations(Graphics g)
         {
-            BeginPaint(g);
-
-            Rectangle LocalBounds = GetLocalBounds();
-            // Call subtile painting routines
-            SubTiles[0].Paint(g);
-            SubTiles[1].Paint(g);
+            // Mark subtiles to be repainted
+            SubTiles[0].RepaintFlag = true;
+            SubTiles[1].RepaintFlag = true;
 
             // Draw Rectangle
             // Condition: At least one subtile is highlighted
             if (SubTiles[0].IsHighlighted() || SubTiles[1].IsHighlighted())
-                g.DrawRectangle(Pens.Black, 0, 0, LocalBounds.Width - 1, LocalBounds.Height - 1);
+                g.DrawRectangle(Pens.Black, 0, 0, Bounds_local.Width - 1, Bounds_local.Height - 1);
 
             DrawExtendedHover(g);
-
-            EndPaint(g);
         }
 
         public void Reserve()
@@ -87,7 +82,7 @@
             RemoveHoverFlagFromBothSubtiles();
             RemoveAllExtendedHover();
             // Which subtile is mouse over?
-            int mouseSubtile = (e.X - GetGlobalBounds().X < e.Y - GetGlobalBounds().Y) ? 1 : 0;
+            int mouseSubtile = (e.X - Bounds_global.X < e.Y - Bounds_global.Y) ? 1 : 0;
             SubTile hoverSubTile = SubTiles[mouseSubtile];
             // Check if that subtile has a highlight
             if (hoverSubTile.IsHighlighted())
@@ -122,14 +117,14 @@
 
             }
 
-            SetRepaintFlag(true);
+            RepaintFlag = true;
         }
         /// <returns>Returns whether FillAnswer() method should be called</returns>
         public bool MouseClick(MouseEventArgs e, out int direction) 
         {
             bool callFillAnswer = false;
             // Which subTile was clicked?
-            int subTileIdx = (e.X - GetGlobalBounds().Location.X > e.Y - GetGlobalBounds().Location.Y) ? 0:1;
+            int subTileIdx = (e.X - Bounds_global.Location.X > e.Y - Bounds_global.Location.Y) ? 0:1;
             direction = subTileIdx;
             SubTile clickedSubTile = SubTiles[subTileIdx];
             // Is clicked subTile highlighted?
@@ -145,7 +140,7 @@
         public override void MouseLeave(MouseEventArgs e, PictureBox pb)
         {
             RemoveHoverFlagFromBothSubtiles();
-            SetRepaintFlag(true);
+            RepaintFlag = true;
             RemoveAllExtendedHover();
         }
     }

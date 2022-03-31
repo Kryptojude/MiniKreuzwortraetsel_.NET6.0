@@ -22,7 +22,15 @@ namespace KreuzworträtselGenerator
         {
             Rectangle Bounds_global { get; set; }
             Rectangle Bounds_local { get; set; }
+            bool RepaintFlag { get; set; }
+            IPaintable[] Children { get; set; }
 
+            void Paint(Graphics g)
+            {
+                BeginPaint(g);
+                PaintOperations(g);
+                EndPaint(g);
+            }
             void BeginPaint(Graphics g)
             {
                 // Block painting out of bounds
@@ -33,7 +41,7 @@ namespace KreuzworträtselGenerator
                 g.FillRectangle(Brushes.White, Bounds_local);
 
             }
-            void Paint(Graphics g);
+            void PaintOperations(Graphics g);
             void EndPaint(Graphics g)
             {
                 g.ResetTransform();
@@ -599,10 +607,14 @@ namespace KreuzworträtselGenerator
                 for (int x = 0; x < grid.GetLength(1); x++)
                 {
                     Tile tile = grid[y, x];
-                    if (tile.GetRepaintFlag())
+                    if (tile.RepaintFlag)
                     {
-                        tile.Paint(myBuffer.Graphics);
-                        tile.SetRepaintFlag(false);
+                        tile.PaintOperations(myBuffer.Graphics);
+                        tile.RepaintFlag = false;
+
+                        // Check child elements (e.g. subTiles)
+                        foreach (IPaintable child in tile.Children)
+                            child.Paint(myBuffer.Graphics);
                     }
                 }
             }

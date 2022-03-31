@@ -1,6 +1,6 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    class LetterTile : Tile, Form1.IPaintable
+    class LetterTile : Tile
     {
         /// <summary>
         /// The question tile(s) that this letter belongs to
@@ -23,19 +23,14 @@
             else
                 parent_QuestionOrBaseWordTiles.Remove(questionTileInterface);
         }
-        public override void Paint(Graphics g)
+        public override void PaintOperations(Graphics g)
         {
-            BeginPaint(g);
-
-            Rectangle LocalBounds = GetLocalBounds();
             // Draw text
             Size textSize = TextRenderer.MeasureText(Text, font);
             g.DrawString(Text, font, foregroundColor, Form1.TS / 2 - textSize.Width / 2, Form1.TS / 2 - textSize.Height / 2);
-            g.DrawRectangle(Pens.Black, 0, 0, LocalBounds.Width - 1, LocalBounds.Height - 1);
+            g.DrawRectangle(Pens.Black, 0, 0, Bounds_local.Width - 1, Bounds_local.Height - 1);
 
             DrawExtendedHover(g);
-
-            EndPaint(g);
         }
 
         public void AddParentQuestionOrBaseWordTile(QuestionOrBaseWordTile questionOrBaseWordTile)
