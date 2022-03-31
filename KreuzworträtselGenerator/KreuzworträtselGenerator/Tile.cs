@@ -51,7 +51,7 @@
         ExtendedHover extendedHover = ExtendedHover.Off;
         protected Pen extendedHoverPen = new Pen(Brushes.Red, 6);
         public bool RepaintFlag { get; set; }
-        public Form1.IPaintable[] Children { get; private set; }
+        public Form1.IPaintable[] Children { get; set; }
 
         public Tile(Point position)
         {

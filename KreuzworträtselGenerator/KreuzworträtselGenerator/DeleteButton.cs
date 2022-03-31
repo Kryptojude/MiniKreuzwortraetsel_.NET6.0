@@ -5,25 +5,25 @@
         static readonly Pen pen;
         const float sizeFactor = 0.3f;
         static readonly int absoluteSize;
-        public static readonly Rectangle bounds_tile_space;
 
         bool visible = false;
         bool hover = false;
         public Rectangle Bounds_global { get; set; }
         public Rectangle Bounds_local { get; set; }
         public bool RepaintFlag { get; set; }
+        public Form1.IPaintable[] Children { get; set; }
 
         static DeleteButton()
         {
             pen = new Pen(Brushes.Red, 1.7f);
-
             absoluteSize = (int)(sizeFactor * Form1.TS);
-            bounds_tile_space = new Rectangle(Form1.TS - absoluteSize, 0, absoluteSize, absoluteSize);
         }
 
         public DeleteButton(Point parentTileLocation)
         {
-            Bounds_global = new Rectangle(bounds_tile_space.X + parentTileLocation.X, bounds_tile_space.Y + parentTileLocation.Y, absoluteSize, absoluteSize);
+            Bounds_global = new Rectangle(Bounds_local.X + parentTileLocation.X, Bounds_local.Y + parentTileLocation.Y, absoluteSize, absoluteSize);
+            Bounds_local = new Rectangle(Form1.TS - absoluteSize, 0, absoluteSize, absoluteSize);
+            Children = new Form1.IPaintable[0];
         }
 
         public bool IsVisible()
@@ -50,7 +50,7 @@
             // Calculate mouse position in tile space
             Point mousePosition_tile_space = new Point(e.X - parentTile.Bounds_global.X, e.Y - parentTile.Bounds_global.Y);
             // Check if mouse is over deleteButton
-            if (bounds_tile_space.X <= mousePosition_tile_space.X && bounds_tile_space.Height >= mousePosition_tile_space.Y)
+            if (Bounds_local.X <= mousePosition_tile_space.X && Bounds_local.Height >= mousePosition_tile_space.Y)
                 return true;
             else
                 return false;

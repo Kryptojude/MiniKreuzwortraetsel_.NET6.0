@@ -24,6 +24,7 @@ namespace KreuzworträtselGenerator
             Rectangle Bounds_local { get; set; }
             bool RepaintFlag { get; set; }
             IPaintable[] Children { get; set; }
+            //static List<IPaintable> IPaintableList { get; set; }
 
             void Paint(Graphics g)
             {
@@ -323,7 +324,7 @@ namespace KreuzworträtselGenerator
                             if (maxMatches > 0)
                                 colorLevel = (float)candidates[i].matches / maxMatches;
 
-                            candidates[i].potentialQuestionTile.SubTiles[candidates[i].direction].SetHighlight(colorLevel);
+                            candidates[i].potentialQuestionTile.Children[candidates[i].direction].SetHighlight(colorLevel);
                         }
                         Tile.TupleToBeFilled = tuple;
                     }
@@ -606,15 +607,20 @@ namespace KreuzworträtselGenerator
             {
                 for (int x = 0; x < grid.GetLength(1); x++)
                 {
-                    Tile tile = grid[y, x];
+                    IPaintable tile = grid[y, x];
                     if (tile.RepaintFlag)
                     {
-                        tile.PaintOperations(myBuffer.Graphics);
+                        tile.Paint(myBuffer.Graphics);
                         tile.RepaintFlag = false;
 
                         // Check child elements (e.g. subTiles)
-                        foreach (IPaintable child in tile.Children)
-                            child.Paint(myBuffer.Graphics);
+                        for (int i = 0; i < tile.Children.Length; i++)
+                        {
+                            if (tile.Children[i] == null)
+                                throw new Exception("tile.Children[i] was null in RepaintFlaggedTiles()");
+                            if (tile.Children[i].RepaintFlag)
+                                tile.Children[i].Paint(myBuffer.Graphics);
+                        }
                     }
                 }
             }

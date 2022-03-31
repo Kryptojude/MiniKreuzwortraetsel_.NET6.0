@@ -1,5 +1,6 @@
 ﻿namespace KreuzworträtselGenerator
 {
+    // Is this class even necessary?
     class SubTile : Form1.IPaintable
     {
         static public readonly Font HOVER_ARROW_FONT = new Font(FontFamily.GenericSerif, 12, FontStyle.Bold);
@@ -21,11 +22,13 @@
         public Rectangle Bounds_global { get; set; }
         public Rectangle Bounds_local { get; set; }
         public bool RepaintFlag { get; set; }
+        public Form1.IPaintable[] Children { get; set; }
 
         public SubTile(int direction, EmptyTile parentTile)
         {
             Direction = direction;
             ParentTile = parentTile;
+            Children = new Form1.IPaintable[0];
         }
         public void RemoveHighlight()
         {

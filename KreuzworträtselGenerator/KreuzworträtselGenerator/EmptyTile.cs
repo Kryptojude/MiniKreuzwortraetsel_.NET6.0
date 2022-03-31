@@ -10,19 +10,22 @@
             {
                 EmptyTile emptyTile = EmptyTileList[i];
                 // Reset the Subtiles so highlights disappear
-                emptyTile.SubTiles[0].RemoveHighlight();
-                emptyTile.SubTiles[1].RemoveHighlight();
+                emptyTile.subTiles[0].RemoveHighlight();
+                emptyTile.subTiles[1].RemoveHighlight();
             }
         }
 
         bool reserved = false;
-        public SubTile[] SubTiles { get; } = new SubTile[2];
+
+        SubTile[] subTiles = new SubTile[2];
 
         public EmptyTile(Point position) : base(position)
         {
             EmptyTileList.Add(this);
-            SubTiles[0] = new SubTile(direction: 0, parentTile: this);
-            SubTiles[1] = new SubTile(direction: 1, parentTile: this);
+            Children = new Form1.IPaintable[2];
+            Children[0] = new SubTile(direction: 0, parentTile: this); 
+            Children[1] = new SubTile(direction: 1, parentTile: this);
+            subTiles = (SubTile[])Children;
         }
 
         public LetterTile ToLetterTile(Tile[,] grid, QuestionOrBaseWordTile questionOrBaseWordTile, string text, PictureBox pb)
@@ -47,12 +50,12 @@
         public override void PaintOperations(Graphics g)
         {
             // Mark subtiles to be repainted
-            SubTiles[0].RepaintFlag = true;
-            SubTiles[1].RepaintFlag = true;
+            subTiles[0].RepaintFlag = true;
+            subTiles[1].RepaintFlag = true;
 
             // Draw Rectangle
             // Condition: At least one subtile is highlighted
-            if (SubTiles[0].IsHighlighted() || SubTiles[1].IsHighlighted())
+            if (subTiles[0].IsHighlighted() || subTiles[1].IsHighlighted())
                 g.DrawRectangle(Pens.Black, 0, 0, Bounds_local.Width - 1, Bounds_local.Height - 1);
 
             DrawExtendedHover(g);
@@ -74,8 +77,8 @@
         }
         private void RemoveHoverFlagFromBothSubtiles()
         {
-            SubTiles[0].SetHoverFlag(false);
-            SubTiles[1].SetHoverFlag(false);
+            subTiles[0].SetHoverFlag(false);
+            subTiles[1].SetHoverFlag(false);
         }
         public override void MouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid)
         {
@@ -83,7 +86,7 @@
             RemoveAllExtendedHover();
             // Which subtile is mouse over?
             int mouseSubtile = (e.X - Bounds_global.X < e.Y - Bounds_global.Y) ? 1 : 0;
-            SubTile hoverSubTile = SubTiles[mouseSubtile];
+            SubTile hoverSubTile = subTiles[mouseSubtile];
             // Check if that subtile has a highlight
             if (hoverSubTile.IsHighlighted())
             {
@@ -126,7 +129,7 @@
             // Which subTile was clicked?
             int subTileIdx = (e.X - Bounds_global.Location.X > e.Y - Bounds_global.Location.Y) ? 0:1;
             direction = subTileIdx;
-            SubTile clickedSubTile = SubTiles[subTileIdx];
+            SubTile clickedSubTile = subTiles[subTileIdx];
             // Is clicked subTile highlighted?
             if (clickedSubTile.IsHighlighted())
             {

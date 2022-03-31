@@ -5,6 +5,7 @@
         /// <summary>
         /// The question tile(s) that this letter belongs to
         /// </summary>
+        /// Convert to array?
         readonly List<QuestionOrBaseWordTile> parent_QuestionOrBaseWordTiles = new List<QuestionOrBaseWordTile>();
         public string Text = "";
 
@@ -12,6 +13,7 @@
         {
             questionOrBaseWordTile.AddLinkedLetterTile(this);
             Text = text;
+            Children = new Form1.IPaintable[0];
         }
 
         public void ToEmptyTile(Tile[,] grid, QuestionOrBaseWordTile questionTileInterface)
