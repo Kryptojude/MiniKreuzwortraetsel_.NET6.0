@@ -2,6 +2,9 @@
 {
     class EmptyTile : Tile
     {
+        //
+        //  <--- static --->
+        //
         static public readonly List<EmptyTile> EmptyTileList = new List<EmptyTile>();
 
         public static void RemoveAllHighlights()
@@ -15,17 +18,21 @@
             }
         }
 
-        bool reserved = false;
+        //
+        //  <--- instance --->
+        //
+        bool reserved;
+        public SubTile[] subTiles { get; set; }
 
-        SubTile[] subTiles = new SubTile[2];
-
-        public EmptyTile(Point position) : base(position)
+        public EmptyTile(Point position, Rectangle bounds_global) : base(position, bounds_global)
         {
-            EmptyTileList.Add(this);
-            Children = new Form1.IPaintable[2];
-            Children[0] = new SubTile(direction: 0, parentTile: this); 
-            Children[1] = new SubTile(direction: 1, parentTile: this);
-            subTiles = (SubTile[])Children;
+            reserved = false;
+            Rectangle subTile_bounds_global = new Rectangle(bounds_global.Width, bounds_global.Height);
+            subTiles = new SubTile[] {
+                new SubTile(direction: 0, parentTile: this, subTile_bounds_global),
+                new SubTile(direction: 1, parentTile: this, subTile_bounds_global)
+            };
+            EmptyTileList.Add(this); 
         }
 
         public LetterTile ToLetterTile(Tile[,] grid, QuestionOrBaseWordTile questionOrBaseWordTile, string text, PictureBox pb)
@@ -47,7 +54,7 @@
             grid[GetPosition().Y, GetPosition().X] = new BaseWordTile(GetPosition(), direction);
             return grid[GetPosition().Y, GetPosition().X] as BaseWordTile;
         }
-        public override void PaintOperations(Graphics g)
+        protected override void PaintOperations(Graphics g)
         {
             // Mark subtiles to be repainted
             subTiles[0].RepaintFlag = true;

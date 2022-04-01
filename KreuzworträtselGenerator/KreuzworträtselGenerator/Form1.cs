@@ -18,38 +18,6 @@ namespace KreuzworträtselGenerator
         BufferedGraphicsContext currentContext;
         BufferedGraphics myBuffer;
 
-        public interface IPaintable
-        {
-            Rectangle Bounds_global { get; set; }
-            Rectangle Bounds_local { get; set; }
-            bool RepaintFlag { get; set; }
-            IPaintable[] Children { get; set; }
-            //static List<IPaintable> IPaintableList { get; set; }
-
-            void Paint(Graphics g)
-            {
-                BeginPaint(g);
-                PaintOperations(g);
-                EndPaint(g);
-            }
-            void BeginPaint(Graphics g)
-            {
-                // Block painting out of bounds
-                g.SetClip(Bounds_global);
-                // Set coordinate system origin to this location
-                g.TranslateTransform(Bounds_global.Location.X, Bounds_global.Location.Y);
-                // Clear
-                g.FillRectangle(Brushes.White, Bounds_local);
-
-            }
-            void PaintOperations(Graphics g);
-            void EndPaint(Graphics g)
-            {
-                g.ResetTransform();
-                g.ResetClip();
-            }
-        }
-
         // TODO: 
         /*
          * Lokale Kopie der Datenbank machen und diese benutzen falls Verbindung fehlschlägt
@@ -81,7 +49,9 @@ namespace KreuzworträtselGenerator
             {
                 for (int x = 0; x < grid.GetLength(1); x++)
                 {
-                    Tile tile = new EmptyTile(new Point(x, y));
+                    Point position = new Point(x, y);
+                    Rectangle bounds_global = new Rectangle(position.X * TS, position.Y * TS, TS, TS);
+                    Tile tile = new EmptyTile(position, bounds_global);
                     grid[y, x] = tile;
                 }
             }
@@ -324,7 +294,7 @@ namespace KreuzworträtselGenerator
                             if (maxMatches > 0)
                                 colorLevel = (float)candidates[i].matches / maxMatches;
 
-                            candidates[i].potentialQuestionTile.Children[candidates[i].direction].SetHighlight(colorLevel);
+                            candidates[i].potentialQuestionTile.subTiles[candidates[i].direction].SetHighlight(colorLevel);
                         }
                         Tile.TupleToBeFilled = tuple;
                     }
@@ -603,25 +573,13 @@ namespace KreuzworträtselGenerator
         }
         private void RepaintFlaggedTiles()
         {
-            for (int y = 0; y < grid.GetLength(0); y++)
+            for (int i = 0; i < PaintObject.PaintObjectList.Count; i++)
             {
-                for (int x = 0; x < grid.GetLength(1); x++)
+                PaintObject paintObject = PaintObject.PaintObjectList[i];
+                if (paintObject.RepaintFlag)
                 {
-                    IPaintable tile = grid[y, x];
-                    if (tile.RepaintFlag)
-                    {
-                        tile.Paint(myBuffer.Graphics);
-                        tile.RepaintFlag = false;
-
-                        // Check child elements (e.g. subTiles)
-                        for (int i = 0; i < tile.Children.Length; i++)
-                        {
-                            if (tile.Children[i] == null)
-                                throw new Exception("tile.Children[i] was null in RepaintFlaggedTiles()");
-                            if (tile.Children[i].RepaintFlag)
-                                tile.Children[i].Paint(myBuffer.Graphics);
-                        }
-                    }
+                    paintObject.Paint(myBuffer.Graphics);
+                    paintObject.RepaintFlag = false;
                 }
             }
 

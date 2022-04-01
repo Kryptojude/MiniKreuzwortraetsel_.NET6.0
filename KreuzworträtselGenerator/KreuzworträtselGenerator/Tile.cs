@@ -1,6 +1,6 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    abstract class Tile : Form1.IPaintable
+    abstract class Tile : PaintObject
     {
         //
         //  <--- static --->
@@ -39,8 +39,6 @@
         //  <--- instance --->
         //
         Point Position;
-        public Rectangle Bounds_global { get; set; }
-        public Rectangle Bounds_local { get; set; }
         // All fields private with accessor methods?
         protected Font font = new Font("Verdana", 9.75f, FontStyle.Bold);
         protected Brush foregroundColor = Brushes.Blue;
@@ -50,16 +48,10 @@
         /// </summary>
         ExtendedHover extendedHover = ExtendedHover.Off;
         protected Pen extendedHoverPen = new Pen(Brushes.Red, 6);
-        public bool RepaintFlag { get; set; }
-        public Form1.IPaintable[] Children { get; set; }
 
-        public Tile(Point position)
+        public Tile(Point position, Rectangle bounds_global) : base(bounds_global)
         {
-            int ts = Form1.TS;
             Position = position;
-            Bounds_global = new Rectangle(Position.X * ts, Position.Y * ts, ts, ts);
-            Bounds_local = new Rectangle(0, 0, ts, ts);
-            RepaintFlag = true;
         }
         public ExtendedHover GetExtendedHover()
         {
@@ -87,7 +79,6 @@
         /// the called method belongs to the tile instance that the mouse was on before the movement
         /// </summary>
         public abstract void MouseLeave(MouseEventArgs e, PictureBox pb);
-        public abstract void PaintOperations(Graphics g);
         /// <summary>
         /// Moves the origin of the grid
         /// </summary>

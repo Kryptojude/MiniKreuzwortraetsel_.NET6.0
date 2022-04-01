@@ -1,17 +1,13 @@
 ﻿namespace KreuzworträtselGenerator
 {
-    class DeleteButton : Form1.IPaintable
+    class DeleteButton : PaintObject
     {
+        //
+        //  <--- static --->
+        //
         static readonly Pen pen;
         const float sizeFactor = 0.3f;
-        static readonly int absoluteSize;
-
-        bool visible = false;
-        bool hover = false;
-        public Rectangle Bounds_global { get; set; }
-        public Rectangle Bounds_local { get; set; }
-        public bool RepaintFlag { get; set; }
-        public Form1.IPaintable[] Children { get; set; }
+        static int absoluteSize { get; }
 
         static DeleteButton()
         {
@@ -19,11 +15,16 @@
             absoluteSize = (int)(sizeFactor * Form1.TS);
         }
 
+        //
+        //  <--- instance --->
+        //
+        bool visible = false;
+        bool hover = false;
+
         public DeleteButton(Point parentTileLocation)
         {
             Bounds_global = new Rectangle(Bounds_local.X + parentTileLocation.X, Bounds_local.Y + parentTileLocation.Y, absoluteSize, absoluteSize);
             Bounds_local = new Rectangle(Form1.TS - absoluteSize, 0, absoluteSize, absoluteSize);
-            Children = new Form1.IPaintable[0];
         }
 
         public bool IsVisible()
@@ -56,7 +57,7 @@
                 return false;
         }
 
-        public void PaintOperations(Graphics g)
+        protected override void PaintOperations(Graphics g)
         {
             if (IsVisible())
             {
