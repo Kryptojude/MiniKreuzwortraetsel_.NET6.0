@@ -14,7 +14,7 @@
         static public readonly Color MinColor = Color.FromArgb(0x9be8a1);
         static public readonly Color MaxColor = Color.FromArgb(0x00ff14);
 
-        bool hover_flag;
+        public bool Hover_flag { get; set; }
         Brush highlight_color;
         bool highlight_flag;
         public int Direction { get; }
@@ -40,14 +40,6 @@
         {
             return highlight_flag;
         }
-        public void SetHoverFlag(bool flag)
-        {
-            hover_flag = flag;
-        }
-        public bool GetHoverFlag()
-        {
-            return hover_flag;
-        }
         public Brush GetColor()
         {
             return highlight_color;
@@ -56,7 +48,7 @@
         protected override void PaintOperations (Graphics g)
         {
             // Hover flag set to true?
-            if (hover_flag)
+            if (Hover_flag)
             {
                 // Draw hover effect
                 g.FillPolygon(Brushes.Blue, subTilePolygons[Direction]);

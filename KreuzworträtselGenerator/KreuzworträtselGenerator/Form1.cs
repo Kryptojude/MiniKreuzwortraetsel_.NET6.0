@@ -233,7 +233,7 @@ namespace KreuzworträtselGenerator
                                             else if (potentialLetterTile is EmptyTile)
                                             {
                                                 // Answer can't go over reserved EmptyTile
-                                                if ((potentialLetterTile as EmptyTile).IsReservedForQuestionTile())
+                                                if ((potentialLetterTile as EmptyTile).Reserved)
                                                     answerFits = false;
                                             }
                                             // Tile is LetterTile
@@ -294,7 +294,7 @@ namespace KreuzworträtselGenerator
                             if (maxMatches > 0)
                                 colorLevel = (float)candidates[i].matches / maxMatches;
 
-                            candidates[i].potentialQuestionTile.subTiles[candidates[i].direction].SetHighlight(colorLevel);
+                            candidates[i].potentialQuestionTile.SubTiles[candidates[i].direction].SetHighlight(colorLevel);
                         }
                         Tile.TupleToBeFilled = tuple;
                     }
@@ -342,7 +342,7 @@ namespace KreuzworträtselGenerator
                 {
                     EmptyTile tileAfterAnswer = grid[tileAfterAnswerPos.Y, tileAfterAnswerPos.X] as EmptyTile;
                     // Reserve the tile and link to questionTile
-                    tileAfterAnswer.Reserve();
+                    tileAfterAnswer.Reserved = true;
                     questionOrBaseWordTile.SetLinkedReservedTile(tileAfterAnswer);
                 }
             }
@@ -547,27 +547,49 @@ namespace KreuzworträtselGenerator
             Tile oldMouseTile = grid[oldMousePosition.Y / TS, oldMousePosition.X / TS];
             // Get new mouse tile
             Tile newMouseTile = grid[e.Y / TS, e.X / TS];
-            // This will always be called, whether mouse movement was intra-tile or inter-tile
-            newMouseTile.MouseMove(e, gridPB, directions, grid);
             // Check if new mouse tile is different from old mouse tile
             if (oldMouseTile != newMouseTile)
             {
                 // If they are different, then the mouse has moved from one tile to another, 
-                // so also call MouseLeave for old tile
+                newMouseTile.MouseEnter();
                 oldMouseTile.MouseLeave(e, gridPB);
             }
+            // old and new mouse tile are the same
+            else
+                newMouseTile.IntraTileMouseMove(e, gridPB, directions, grid);
 
             RepaintFlaggedPaintObjects();
 
             // Update old mouse position
             oldMousePosition = new Point(e.X, e.Y);
         }
+        //private void GridPB_MouseMove(object sender, MouseEventArgs e)
+        //{
+        //    // Get old mouse tile
+        //    Tile oldMouseTile = grid[oldMousePosition.Y / TS, oldMousePosition.X / TS];
+        //    // Get new mouse tile
+        //    Tile newMouseTile = grid[e.Y / TS, e.X / TS];
+        //    // This will always be called, whether mouse movement was intra-tile or inter-tile
+        //    newMouseTile.MouseMove(e, gridPB, directions, grid);
+        //    // Check if new mouse tile is different from old mouse tile
+        //    if (oldMouseTile != newMouseTile)
+        //    {
+        //        // If they are different, then the mouse has moved from one tile to another, 
+        //        // so also call MouseLeave for old tile
+        //        oldMouseTile.MouseLeave(e, gridPB);
+        //    }
+
+        //    RepaintFlaggedPaintObjects();
+
+        //    // Update old mouse position
+        //    oldMousePosition = new Point(e.X, e.Y);
+        //}
         private void GridPB_Paint(object sender, PaintEventArgs e)
         {
             myBuffer.Render();
 
             // Draw Popup
-            //if (popup.IsVisible())
+            //if (popup.Visible)
             //    e.Graphics.DrawString(popup.GetText(), Font, Brushes.Black, popup.GetPosition());
 
         }

@@ -6,17 +6,30 @@
         protected int Direction;
         protected readonly List<LetterTile> LinkedLetterTiles;
         protected EmptyTile LinkedReservedTile;
-        protected DeleteButton deleteButton;
+        DeleteButton deleteButton;
+        struct DeleteButton
+        {
+            public bool Visible { get; set; }
+            public Pen Pen { get; }
+            public Rectangle Bounds_tile_space { get; }
+
+            public DeleteButton()
+            {
+                Pen = new Pen(Brushes.Red, 1.7f);
+                Visible = false;
+                int size = 10;
+                Bounds_tile_space = new Rectangle(Form1.TS - size, 0, size, size);
+            }
+        }
 
         public QuestionOrBaseWordTile(Point position, int direction, Rectangle bounds_global) : base(position, bounds_global)
         {
             Direction = direction;
             LinkedLetterTiles = new List<LetterTile>();
-            Rectangle deleteButton_bounds_global 
-            deleteButton = new DeleteButton(deleteButton_bounds_global);
-
             foregroundColor = Brushes.Red;
             font = new Font(FontFamily.GenericSerif, 12, FontStyle.Bold);
+
+            deleteButton = new();
         }
 
         public string GetText()
@@ -40,13 +53,21 @@
         public void MouseClick(MouseEventArgs e, Tile[,] grid, PictureBox pb)
         {
             // If the click was on the deleteButton
-            if (deleteButton.IsMouseOverMe(e, this))
+            if (IsMouseOverDeleteButton(e.Location))
             {
                 // Then delete this question
                 ToEmptyTile(grid);
                 // Turn mouse normal
                 pb.Cursor = Cursors.Default;
             }
+        }
+        bool IsMouseOverDeleteButton(Point mousePosition)
+        {
+            // Check if mouse is over deleteButton
+            if (mousePosition.X >= Bounds_global.Left && mousePosition.Y <= Bounds_global.Bottom)
+                return true;
+            else
+                return false;
         }
         public virtual void ToEmptyTile(Tile[,] grid)
         {
@@ -55,24 +76,15 @@
                 letterTile.ToEmptyTile(grid, this);
 
             // Unreserve the reserved tile of the questionTile
-            LinkedReservedTile?.Unreserve();
+            LinkedReservedTile?.Reserved = false = true;
 
             // Insert a new EmptyTile instance into the grid at this tile's position, 
             Point position = GetPosition();
             grid[position.Y, position.X] = new EmptyTile(position, Bounds_global);
 
             Destructor();
-            deleteButton.Destructor();
         }
 
-        public override void MouseLeave(MouseEventArgs e, PictureBox pb)
-        {
-            // deleteButton is not visible
-            deleteButton.SetVisible(false);
-            deleteButton.SetHover(false, pb);
-
-            RepaintFlag = true;
-        }
 
         protected override void PaintOperations(Graphics g)
         {
@@ -81,24 +93,38 @@
             g.DrawString(Text, font, foregroundColor, Form1.TS / 2 - textSize.Width / 2, Form1.TS / 2 - textSize.Height / 2);
             g.DrawRectangle(Pens.Black, 0, 0, Bounds_local.Width - 1, Bounds_local.Height - 1);
 
-            // Draw X
-            deleteButton.RepaintFlag = true;
+            // Draw deleteButton
+            if (deleteButton.Visible)
+            {
+                g.DrawRectangle(deleteButton.Pen, deleteButton.Bounds_tile_space);
+                g.DrawLine(deleteButton.Pen, deleteButton.Bounds_tile_space.Left, deleteButton.Bounds_tile_space.Top, deleteButton.Bounds_tile_space.Right, deleteButton.Bounds_tile_space.Bottom);
+                g.DrawLine(deleteButton.Pen, deleteButton.Bounds_tile_space.Left, deleteButton.Bounds_tile_space.Bottom, deleteButton.Bounds_tile_space.Right, deleteButton.Bounds_tile_space.Top);
+            }
         }
 
-        public override void MouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid)
+        public override void MouseEnter()
         {
             // Set deleteButton to visible
-            deleteButton.SetVisible(true);
-            // Is mouse hovering over deleteButton?
-            if (deleteButton.IsMouseOverMe(e, this))
-                // Call delete button hover logic
-                deleteButton.SetHover(true, pb);
-            else
-                // Mouse is not over deleteButton, 
-                // so undo deleteButton hover
-                deleteButton.SetHover(false, pb);
+            deleteButton.Visible = true;
+            RepaintFlag = true;
+        }
+        public override void MouseLeave(MouseEventArgs e, PictureBox pb)
+        {
+            // deleteButton is not visible anymore
+            deleteButton.Visible = false;
+            pb.Cursor = Cursors.Default;
 
             RepaintFlag = true;
         }
+        public override void IntraTileMouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid)
+        {
+            // Is mouse hovering over deleteButton?
+            if (IsMouseOverDeleteButton(e.Location))
+                pb.Cursor = Cursors.Hand;
+            else
+                pb.Cursor = Cursors.Default;
+        }
+
+        
     }
 }

@@ -42,13 +42,8 @@
             parent_QuestionOrBaseWordTiles.Add(questionOrBaseWordTile);
         }
 
-        public override void MouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid)
-        {
-        }
-
-        public override void MouseLeave(MouseEventArgs e, PictureBox pb)
-        {
-
-        }        
+        public override void MouseEnter(MouseEventArgs e, PictureBox pb) { }
+        public override void MouseLeave(MouseEventArgs e, PictureBox pb) { }
+        public override void IntraTileMouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid) { }
     }
 }
