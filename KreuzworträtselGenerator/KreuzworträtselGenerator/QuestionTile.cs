@@ -6,7 +6,7 @@
 
         string Question;
 
-        public QuestionTile(Point position, string question, int direction) : base(position, direction)
+        public QuestionTile(Point position, string question, int direction, Rectangle bounds_global) : base(position, direction, bounds_global)
         {
             Question = question;
             QuestionTileList.Add(this);

@@ -11,12 +11,17 @@
         {
             PaintObjectList = new List<PaintObject>();
         }
+        static void EndPaint(Graphics g)
+        {
+            g.ResetTransform();
+            g.ResetClip();
+        }
 
         //
         //  <--- instance --->
         //
-        protected Rectangle Bounds_global { get; }
-        Rectangle Bounds_local { get; }
+        public Rectangle Bounds_global { get; }
+        protected Rectangle Bounds_local { get; }
         public bool RepaintFlag { get; set; }
 
         public PaintObject(Rectangle bounds_global)
@@ -24,6 +29,11 @@
             Bounds_global = bounds_global;
             Bounds_local = new Rectangle(0, 0, bounds_global.Width, bounds_global.Height);
             RepaintFlag = true;
+            PaintObjectList.Add(this);
+        }
+        public virtual void Destructor()
+        {
+            PaintObjectList.Remove(this);
         }
         public void Paint(Graphics g)
         {
@@ -42,10 +52,5 @@
 
         }
         protected abstract void PaintOperations(Graphics g);
-        void EndPaint(Graphics g)
-        {
-            g.ResetTransform();
-            g.ResetClip();
-        }
     }
 }

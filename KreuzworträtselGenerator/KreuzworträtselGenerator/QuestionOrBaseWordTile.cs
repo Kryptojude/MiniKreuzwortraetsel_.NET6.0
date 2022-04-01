@@ -8,11 +8,12 @@
         protected EmptyTile LinkedReservedTile;
         protected DeleteButton deleteButton;
 
-        public QuestionOrBaseWordTile(Point position, int direction) : base(position)
+        public QuestionOrBaseWordTile(Point position, int direction, Rectangle bounds_global) : base(position, bounds_global)
         {
             Direction = direction;
             LinkedLetterTiles = new List<LetterTile>();
-            deleteButton = new DeleteButton(Bounds_global.Location);
+            Rectangle deleteButton_bounds_global 
+            deleteButton = new DeleteButton(deleteButton_bounds_global);
 
             foregroundColor = Brushes.Red;
             font = new Font(FontFamily.GenericSerif, 12, FontStyle.Bold);
@@ -58,7 +59,10 @@
 
             // Insert a new EmptyTile instance into the grid at this tile's position, 
             Point position = GetPosition();
-            grid[position.Y, position.X] = new EmptyTile(position);
+            grid[position.Y, position.X] = new EmptyTile(position, Bounds_global);
+
+            Destructor();
+            deleteButton.Destructor();
         }
 
         public override void MouseLeave(MouseEventArgs e, PictureBox pb)
@@ -70,7 +74,7 @@
             RepaintFlag = true;
         }
 
-        public override void PaintOperations(Graphics g)
+        protected override void PaintOperations(Graphics g)
         {
             // Draw text // calculate in Text setter method?
             Size textSize = TextRenderer.MeasureText(Text, font);

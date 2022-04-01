@@ -323,7 +323,7 @@ namespace KreuzworträtselGenerator
                 }
             }
 
-            RepaintFlaggedTiles();
+            RepaintFlaggedPaintObjects();
         }
 
         private void FillAnswer(QuestionOrBaseWordTile questionOrBaseWordTile, (string Question, string Answer) tuple)
@@ -359,7 +359,7 @@ namespace KreuzworträtselGenerator
                     EmptyTile emptyTile = tile as EmptyTile;
                     // Convert the EmptyTile to LetterTile
                     string text = tuple.Answer[c].ToString();
-                    emptyTile.ToLetterTile(grid, questionOrBaseWordTile, text, gridPB);
+                    emptyTile.ToLetterTile(grid, questionOrBaseWordTile, text);
                 }
                 else if (tile is LetterTile)
                 {
@@ -557,7 +557,7 @@ namespace KreuzworträtselGenerator
                 oldMouseTile.MouseLeave(e, gridPB);
             }
 
-            RepaintFlaggedTiles();
+            RepaintFlaggedPaintObjects();
 
             // Update old mouse position
             oldMousePosition = new Point(e.X, e.Y);
@@ -571,7 +571,7 @@ namespace KreuzworträtselGenerator
             //    e.Graphics.DrawString(popup.GetText(), Font, Brushes.Black, popup.GetPosition());
 
         }
-        private void RepaintFlaggedTiles()
+        private void RepaintFlaggedPaintObjects()
         {
             for (int i = 0; i < PaintObject.PaintObjectList.Count; i++)
             {
@@ -607,7 +607,7 @@ namespace KreuzworträtselGenerator
                 }
             }
 
-            RepaintFlaggedTiles();
+            RepaintFlaggedPaintObjects();
         }
 
         // Methods that call DetermineCandidateSubtiles()

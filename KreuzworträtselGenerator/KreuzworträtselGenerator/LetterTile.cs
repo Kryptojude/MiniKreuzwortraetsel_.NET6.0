@@ -9,23 +9,25 @@
         readonly List<QuestionOrBaseWordTile> parent_QuestionOrBaseWordTiles = new List<QuestionOrBaseWordTile>();
         public string Text = "";
 
-        public LetterTile(Point position, QuestionOrBaseWordTile questionOrBaseWordTile, string text) : base(position)
+        public LetterTile(Point position, QuestionOrBaseWordTile questionOrBaseWordTile, string text, Rectangle bounds_global) : base(position, bounds_global)
         {
             questionOrBaseWordTile.AddLinkedLetterTile(this);
             Text = text;
-            Children = new Form1.IPaintable[0];
         }
 
         public void ToEmptyTile(Tile[,] grid, QuestionOrBaseWordTile questionTileInterface)
         {
-            // If the letterTile only belongs to this questionTile, then make into EmptyTile
+            // If the letterTile only belongs to one questionTile, then make into EmptyTile
             if (parent_QuestionOrBaseWordTiles.Count == 1)
-                grid[GetPosition().Y, GetPosition().X] = new EmptyTile(GetPosition());
+            {
+                grid[GetPosition().Y, GetPosition().X] = new EmptyTile(GetPosition(), Bounds_global);
+                Destructor();
+            }
             // If the letterTile belongs to multiple QuestionTiles, just remove this QuestionTile from its question tile list
             else
                 parent_QuestionOrBaseWordTiles.Remove(questionTileInterface);
         }
-        public override void PaintOperations(Graphics g)
+        protected override void PaintOperations(Graphics g)
         {
             // Draw text
             Size textSize = TextRenderer.MeasureText(Text, font);

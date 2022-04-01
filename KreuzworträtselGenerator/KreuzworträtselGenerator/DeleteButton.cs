@@ -21,10 +21,9 @@
         bool visible = false;
         bool hover = false;
 
-        public DeleteButton(Point parentTileLocation)
+        public DeleteButton(Rectangle bounds_global) : base(bounds_global)
         {
-            Bounds_global = new Rectangle(Bounds_local.X + parentTileLocation.X, Bounds_local.Y + parentTileLocation.Y, absoluteSize, absoluteSize);
-            Bounds_local = new Rectangle(Form1.TS - absoluteSize, 0, absoluteSize, absoluteSize);
+
         }
 
         public bool IsVisible()

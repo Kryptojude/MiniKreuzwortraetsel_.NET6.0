@@ -27,31 +27,38 @@
         public EmptyTile(Point position, Rectangle bounds_global) : base(position, bounds_global)
         {
             reserved = false;
-            Rectangle subTile_bounds_global = new Rectangle(bounds_global.Width, bounds_global.Height);
             subTiles = new SubTile[] {
-                new SubTile(direction: 0, parentTile: this, subTile_bounds_global),
-                new SubTile(direction: 1, parentTile: this, subTile_bounds_global)
+                new SubTile(direction: 0, parentTile: this, Bounds_global),
+                new SubTile(direction: 1, parentTile: this, Bounds_global)
             };
             EmptyTileList.Add(this); 
         }
-
-        public LetterTile ToLetterTile(Tile[,] grid, QuestionOrBaseWordTile questionOrBaseWordTile, string text, PictureBox pb)
+        public override void Destructor()
+        {
+            base.Destructor();
+            subTiles[0].Destructor();
+            subTiles[1].Destructor();
+        }
+        public LetterTile ToLetterTile(Tile[,] grid, QuestionOrBaseWordTile questionOrBaseWordTile, string text)
         {
             EmptyTileList.Remove(this);
-            grid[GetPosition().Y, GetPosition().X] = new LetterTile(GetPosition(), questionOrBaseWordTile, text);
+            grid[GetPosition().Y, GetPosition().X] = new LetterTile(GetPosition(), questionOrBaseWordTile, text, Bounds_global);
+            Destructor();
             return grid[GetPosition().Y, GetPosition().X] as LetterTile;
         }
         public QuestionTile ToQuestionTile(Tile[,] grid, string question, int direction)
         {
             EmptyTileList.Remove(this);
-            grid[GetPosition().Y, GetPosition().X] = new QuestionTile(GetPosition(), question, direction);
+            grid[GetPosition().Y, GetPosition().X] = new QuestionTile(GetPosition(), question, direction, Bounds_global);
+            Destructor();
             return grid[GetPosition().Y, GetPosition().X] as QuestionTile;
         }
 
         public BaseWordTile ToBaseWordTile(Tile[,] grid, int direction)
         {
             EmptyTileList.Remove(this);
-            grid[GetPosition().Y, GetPosition().X] = new BaseWordTile(GetPosition(), direction);
+            grid[GetPosition().Y, GetPosition().X] = new BaseWordTile(GetPosition(), direction, Bounds_global);
+            Destructor();
             return grid[GetPosition().Y, GetPosition().X] as BaseWordTile;
         }
         protected override void PaintOperations(Graphics g)

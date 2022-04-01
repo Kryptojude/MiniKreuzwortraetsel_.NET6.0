@@ -2,7 +2,7 @@
 {
     class BaseWordTile : QuestionOrBaseWordTile
     {
-        public BaseWordTile(Point position, int direction) : base(position, direction)
+        public BaseWordTile(Point position, int direction, Rectangle bounds_global) : base(position, direction, bounds_global)
         {
             Text = GetArrow(Direction);
         }
