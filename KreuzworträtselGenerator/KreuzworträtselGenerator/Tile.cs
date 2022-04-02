@@ -7,7 +7,7 @@
         //
         // Shorten tuple lines with var?
         static public (string Question, string Answer) TupleToBeFilled;
-        static protected List<Tile> tiles_with_extended_hover_list = new List<Tile>();
+
         public enum ExtendedHover
         {
             Off = -1,
@@ -15,12 +15,6 @@
             Three_Outlines_Horizontal = 1,
             Two_Outlines_Vertical = 2,
             Three_Outlines_Vertical = 3,
-        }
-        static protected void RemoveAllExtendedHover()
-        {
-            for (int i = 0; i < tiles_with_extended_hover_list.Count; i++)
-                tiles_with_extended_hover_list[i].SetExtendedHover(ExtendedHover.Off);
-            tiles_with_extended_hover_list.Clear();
         }
 
         static readonly Dictionary<string, string> Arrows = new Dictionary<string, string>() {
@@ -70,23 +64,12 @@
             return Position;
         }
         /// <summary>
-        /// This will be called when the mouse has moved, 
-        /// the called method belongs to the tile instance that the mouse is on after the movement
+        /// When the mouse has moved to a new position within the same tile
         /// </summary>
         public abstract void IntraTileMouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid);
-        /// <summary>
-        /// This will be called when the mouse has moved from one tile to another,
-        /// the called method belongs to the tile instance that the mouse was on before the movement
-        /// </summary>
-        public abstract void MouseEnter(MouseEventArgs e, PictureBox pb);
-        public abstract void MouseLeave(MouseEventArgs e, PictureBox pb);
-        /// <summary>
-        /// Moves the origin of the grid
-        /// </summary>
-        static public void TranslateTransformGraphics(Graphics g, Point location)
-        {
-            g.TranslateTransform(location.X, location.Y);
-        }
+        public abstract void MouseEnter(MouseEventArgs e, Point[] directions, Tile[,] grid);
+        public abstract void MouseLeave(PictureBox pb);
+
         protected void DrawExtendedHover(Graphics g)
         {
             int stroke_length = Form1.TS;

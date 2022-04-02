@@ -14,7 +14,7 @@ namespace KreuzworträtselGenerator
         enum UI_mode_enum { normal, noDB };
         UI_mode_enum UI_mode;
         Random random = new Random();
-        Point oldMousePosition = new Point();
+        Point oldMousePosition;
         BufferedGraphicsContext currentContext;
         BufferedGraphics myBuffer;
 
@@ -39,6 +39,7 @@ namespace KreuzworträtselGenerator
         {
             InitializeComponent();
 
+            oldMousePosition = new Point(-1, -1);
             currentContext = BufferedGraphicsManager.Current;
             myBuffer = currentContext.Allocate(gridPB.CreateGraphics(), DisplayRectangle);
             myBuffer.Graphics.FillRectangle(Brushes.White, gridPB.Bounds);
@@ -323,7 +324,7 @@ namespace KreuzworträtselGenerator
                 }
             }
 
-            RepaintFlaggedPaintObjects();
+            RepaintFlaggedTiles();
         }
 
         private void FillAnswer(QuestionOrBaseWordTile questionOrBaseWordTile, (string Question, string Answer) tuple)
@@ -543,22 +544,29 @@ namespace KreuzworträtselGenerator
         /// </summary>
         private void GridPB_MouseMove(object sender, MouseEventArgs e)
         {
-            // Get old mouse tile
-            Tile oldMouseTile = grid[oldMousePosition.Y / TS, oldMousePosition.X / TS];
             // Get new mouse tile
             Tile newMouseTile = grid[e.Y / TS, e.X / TS];
-            // Check if new mouse tile is different from old mouse tile
-            if (oldMouseTile != newMouseTile)
-            {
-                // If they are different, then the mouse has moved from one tile to another, 
-                newMouseTile.MouseEnter();
-                oldMouseTile.MouseLeave(e, gridPB);
-            }
-            // old and new mouse tile are the same
-            else
-                newMouseTile.IntraTileMouseMove(e, gridPB, directions, grid);
 
-            RepaintFlaggedPaintObjects();
+            // Handle illegal oldMousePosition (-1,-1) when moving onto grid for the first time
+            if (oldMousePosition.X == -1)
+                newMouseTile.MouseEnter(e, directions, grid);
+            else
+            {
+                // Get old mouse tile
+                Tile oldMouseTile = grid[oldMousePosition.Y / TS, oldMousePosition.X / TS];
+                // Check if new mouse tile is different from old mouse tile
+                if (oldMouseTile != newMouseTile)
+                {
+                    // If they are different, then the mouse has moved from one tile to another, 
+                    newMouseTile.MouseEnter(e, directions, grid);
+                    oldMouseTile.MouseLeave(gridPB);
+                }
+                // old and new mouse tile are the same
+                else
+                    newMouseTile.IntraTileMouseMove(e, gridPB, directions, grid);
+            }
+
+            RepaintFlaggedTiles();
 
             // Update old mouse position
             oldMousePosition = new Point(e.X, e.Y);
@@ -593,17 +601,19 @@ namespace KreuzworträtselGenerator
             //    e.Graphics.DrawString(popup.GetText(), Font, Brushes.Black, popup.GetPosition());
 
         }
-        private void RepaintFlaggedPaintObjects()
+        private void RepaintFlaggedTiles()
         {
-            for (int i = 0; i < PaintObject.PaintObjectList.Count; i++)
-            {
-                PaintObject paintObject = PaintObject.PaintObjectList[i];
-                if (paintObject.RepaintFlag)
+            for (int x = 0; x < grid.GetLength(1); x++)
+                for (int y = 0; y < grid.GetLength(0); y++)
                 {
-                    paintObject.Paint(myBuffer.Graphics);
-                    paintObject.RepaintFlag = false;
+                    Tile tile = grid[y, x];
+                
+                    if (tile.RepaintFlag)
+                    {
+                        tile.Paint(myBuffer.Graphics);
+                        tile.RepaintFlag = false;
+                    }
                 }
-            }
 
             myBuffer.Render();
         }
@@ -629,7 +639,7 @@ namespace KreuzworträtselGenerator
                 }
             }
 
-            RepaintFlaggedPaintObjects();
+            RepaintFlaggedTiles();
         }
 
         // Methods that call DetermineCandidateSubtiles()

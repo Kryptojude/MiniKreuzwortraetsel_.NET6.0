@@ -21,7 +21,6 @@
             if (parent_QuestionOrBaseWordTiles.Count == 1)
             {
                 grid[GetPosition().Y, GetPosition().X] = new EmptyTile(GetPosition(), Bounds_global);
-                Destructor();
             }
             // If the letterTile belongs to multiple QuestionTiles, just remove this QuestionTile from its question tile list
             else
@@ -42,8 +41,8 @@
             parent_QuestionOrBaseWordTiles.Add(questionOrBaseWordTile);
         }
 
-        public override void MouseEnter(MouseEventArgs e, PictureBox pb) { }
-        public override void MouseLeave(MouseEventArgs e, PictureBox pb) { }
+        public override void MouseEnter(MouseEventArgs e, Point[] directions, Tile[,] grid) { }
+        public override void MouseLeave(PictureBox pb) { }
         public override void IntraTileMouseMove(MouseEventArgs e, PictureBox pb, Point[] directions, Tile[,] grid) { }
     }
 }

@@ -76,13 +76,12 @@
                 letterTile.ToEmptyTile(grid, this);
 
             // Unreserve the reserved tile of the questionTile
-            LinkedReservedTile?.Reserved = false = true;
+            if (LinkedReservedTile != null)
+                LinkedReservedTile.Reserved = false;
 
             // Insert a new EmptyTile instance into the grid at this tile's position, 
             Point position = GetPosition();
             grid[position.Y, position.X] = new EmptyTile(position, Bounds_global);
-
-            Destructor();
         }
 
 
@@ -102,13 +101,13 @@
             }
         }
 
-        public override void MouseEnter()
+        public override void MouseEnter(MouseEventArgs e, Point[] directions, Tile[,] grid)
         {
             // Set deleteButton to visible
             deleteButton.Visible = true;
             RepaintFlag = true;
         }
-        public override void MouseLeave(MouseEventArgs e, PictureBox pb)
+        public override void MouseLeave(PictureBox pb)
         {
             // deleteButton is not visible anymore
             deleteButton.Visible = false;

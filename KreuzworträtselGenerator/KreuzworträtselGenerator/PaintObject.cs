@@ -5,12 +5,6 @@
         //
         //  <--- static --->
         //
-        public static List<PaintObject> PaintObjectList { get; }
-
-        static PaintObject()
-        {
-            PaintObjectList = new List<PaintObject>();
-        }
         static void EndPaint(Graphics g)
         {
             g.ResetTransform();
@@ -29,11 +23,6 @@
             Bounds_global = bounds_global;
             Bounds_local = new Rectangle(0, 0, bounds_global.Width, bounds_global.Height);
             RepaintFlag = true;
-            PaintObjectList.Add(this);
-        }
-        public virtual void Destructor()
-        {
-            PaintObjectList.Remove(this);
         }
         public void Paint(Graphics g)
         {
@@ -52,5 +41,12 @@
 
         }
         protected abstract void PaintOperations(Graphics g);
+        /// <summary>
+        /// Moves the origin of the grid
+        /// </summary>
+        static public void TranslateTransformGraphics(Graphics g, Point location)
+        {
+            g.TranslateTransform(location.X, location.Y);
+        }
     }
 }
